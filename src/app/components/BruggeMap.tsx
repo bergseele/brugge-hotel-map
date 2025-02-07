@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, ZoomControl, useMap, Polyline, Tooltip } from 'react-leaflet';
 import { Icon, LatLngExpression } from 'leaflet';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { hotels } from './hotelData';
 
@@ -31,13 +30,21 @@ const StreetRouting = ({
   onRouteData?: (data: RouteInfo) => void;
 }) => {
   const map = useMap();
-  const [routeLayer, setRouteLayer] = useState<any>(null);
-  const [routeData, setRouteData] = useState<any>(null);
+  const [routeLayer] = useState<L.Layer | null>(null);
+  interface RouteData {
+    routes: {
+      geometry: {
+        coordinates: [number, number][];
+      };
+    }[];
+  }
+  const [routeData, setRouteData] = useState<RouteData | null>(null);
   
   useEffect(() => {
     if (routeLayer) {
       map.removeLayer(routeLayer);
     }
+    
 
     if (!hotelCoords) return;
 
@@ -86,7 +93,7 @@ const StreetRouting = ({
         map.removeLayer(routeLayer);
       }
     };
-  }, [hotelCoords, map, onRouteData]);
+  }, [hotelCoords, map, onRouteData, routeLayer]);
 
   return (
     <>
@@ -122,7 +129,8 @@ const historicLandmarks: { name: string; coords: [number, number]; iconUrl: stri
 
 const BruggeMap: React.FC = () => {
   const [selectedHotels, setSelectedHotels] = useState<Hotel[]>([]);
-  const [routeData, setRouteData] = useState<any>(null);  // this fixes cannot find name routedata error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [routeData, setRouteData] = useState<{ routes: { geometry: { coordinates: [number, number][] } }[] } | null>(null);
   const [showRadii, setShowRadii] = useState(true);
   const [routeInfo, setRouteInfo] = useState<{[key: string]: RouteInfo}>({});
 
